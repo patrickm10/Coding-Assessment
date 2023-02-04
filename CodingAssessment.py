@@ -3,6 +3,9 @@ import csv
 import os
 import requests
 
+input_file = "C:/Users/patri/Downloads/sample_files-3/sample_files/annotate/coordinates_to_annotate.txt"
+annotation_file = "C:/Users/patri/Downloads/sample_files-3/sample_files/gtf/hg19_annotations.gtf"
+
 
 # Function to convert the fastq file into a CSV file with Identifier, Sequence, and Length of sequence
 # Parameters: FASTQ file and CSV file
@@ -70,20 +73,20 @@ def find_frequent_sequences(fasta_file):
     return freq_seq
 
 
+# Function that parses through the gtf file to get the chromosome name, start and end
+# Coordinates and creates a CSV file that improves the search time of the lookup annotation function
+# Parameters: gtf file, CSV file
+# Returns the CSV file with the corresponding gtf values
 def convert_gtf_to_csv(gtf_file, csv_file):
     with open(gtf_file, 'r') as f_in, open(csv_file, 'w', newline='') as f_out:
         reader = csv.reader(f_in, delimiter='\t')
         writer = csv.writer(f_out)
         writer.writerow(['chromosome', 'start', 'end', 'annotation'])  # write header row
         for line in reader:
-            if line[0].startswith('#'):  # skip comment lines
+            if line[0].startswith('#'):
                 continue
             chromosome, start, end, annotation = line[0], int(line[3]), int(line[4]), line[8]
             writer.writerow([chromosome, start, end, annotation])
-
-
-input_file = "C:/Users/patri/Downloads/sample_files-3/sample_files/annotate/coordinates_to_annotate.txt"
-annotation_file = "C:/Users/patri/Downloads/sample_files-3/sample_files/gtf/hg19_annotations.gtf"
 
 
 # Function that takes an input file and a gtf file and looks up the chromosome and coordinate
@@ -94,13 +97,16 @@ annotation_file = "C:/Users/patri/Downloads/sample_files-3/sample_files/gtf/hg19
 def lookup_annotation(chromosome, coordinate, gtf_file):
     with open(gtf_file, 'r') as f:
         for line in f:
-            if line.startswith('#'):  # skip comment lines
+            if line.startswith('#'):
                 continue
             fields = line.strip().split('\t')
             if fields[0] == chromosome and int(fields[3]) <= coordinate <= int(fields[4]):
                 return fields[8]
     return 'Annotation not found'
 
+
+# Function that reads through each row in an input file and once the lookup function is complete
+# it prints the annotation of the chromosome that was found
 def find_annotation():
     with open(input_file, 'r') as f:
         for line in f:
