@@ -3,10 +3,10 @@
 ## Bioinformatics and Data Handling Using Python
 
 ### Libraries Used:
-CSV
-OS
-Requests
+CSV,
+OS,
+Requests,
+Ensembl API,
 Pybedtools
-Ensembl API
 
 
